@@ -1,0 +1,2 @@
+./image.py $@
+java -jar heightmap2stl.jar /tmp/out.png  8 0
