@@ -1,10 +1,12 @@
+#!/Users/nilo/Documents/ebk/namebadge/py/bin/python
 import sys
 import tempfile
 import PIL.Image
 import PIL.ImageDraw
 import PIL.ImageFont
 import PIL.ImageOps
-import StringIO
+
+
 import math
 
 
@@ -110,7 +112,7 @@ def create_rounded_rectangle(img, radius=20, opacity=0):
     draw = PIL.ImageDraw.Draw(corner)
     draw.pieslice((0, 0, 2 * factor * radius, 2 * factor * radius),
         180, 270, fill=0)
-    corner = corner.resize((radius, radius), PIL.Image.ANTIALIAS)
+    corner = corner.resize((radius, radius), PIL.Image.BICUBIC)
     #rounded rectangle
     rectangle = PIL.Image.new('1', (radius, radius), 0)
     rounded_rectangle = cross.copy()
@@ -146,7 +148,10 @@ def create_image(name, with_hole=True):
 
     image = PIL.Image.new('RGBA', (300, 300), (0,0,0,0))
     draw = PIL.ImageDraw.Draw(image)
-    text_size_x, text_size_y = draw.textsize(name, font=FONT)
+
+    left, top, right, bottom = FONT.getbbox(name)
+    text_size_x = right - left
+    text_size_y = bottom - top
     x,y = out_size = (text_size_x + 60, text_size_y + 30)
     imtext = PIL.Image.new("L", out_size, bg)
     drtext = PIL.ImageDraw.Draw(imtext)
@@ -156,11 +161,13 @@ def create_image(name, with_hole=True):
     hole_y = int(y/2.0)
     drtext.ellipse((hole_x-h_r,hole_y-h_r, hole_x+h_r, hole_y+h_r), fill="black")
     imtext = create_rounded_rectangle(imtext, 20)
+
     #imtext.show()
-    outfile = open('/tmp/out.png', 'w+')
-    imtext.save(outfile, 'PNG')
+    #breakpoint()
+    #outfile = open('out.png', 'w+')
+    imtext.save('out.png', 'PNG')
 
 if __name__ == "__main__":
-    name = u' '.join([unicode(x.decode('utf8')) for x in sys.argv[1:]])
+    name = ' '.join(sys.argv[1:])
     create_image(name)
 
